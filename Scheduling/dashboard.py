@@ -16,6 +16,13 @@ from pathlib import Path
 from plotly.offline import get_plotlyjs
 
 
+DEFAULT_RULE_SETTINGS = {
+    "coverage": True, "capacity": True, "daily_limit": True,
+    "unavailability": True, "senior_night": True,
+    "senior_weekends_allowed": True, "fairness": True,
+}
+
+
 def generate_dashboard(result: dict, output_path: str | Path) -> Path:
     """Render reviewed solver output; never run or change the scheduling model."""
     if result.get("schema_version") != 1:
@@ -102,13 +109,13 @@ TEMPLATE = r"""<!doctype html>
 <section class="metrics" aria-label="Filtered schedule metrics" aria-live="polite">
 <div class="metric"><div class="metric-label">Assignments</div><div class="metric-value" id="assigned-value"></div><div class="metric-note" id="assigned-note"></div></div>
 <div class="metric"><div class="metric-label">Total workload range <span title="Minimum–maximum assignments per doctor in the selected scope. Off-duty doctors are included.">ⓘ</span></div><div class="metric-value" id="total-value"></div><div class="metric-note" id="total-note"></div></div>
-<div class="metric"><div class="metric-label">Night workload range <span title="Minimum–maximum night assignments among eligible junior doctors in the selected scope.">ⓘ</span></div><div class="metric-value" id="night-value"></div><div class="metric-note" id="night-note"></div></div>
-<div class="metric"><div class="metric-label">Weekend workload range <span title="Assignments whose start date is Saturday or Sunday, per selected doctor.">ⓘ</span></div><div class="metric-value" id="weekend-value"></div><div class="metric-note" id="weekend-note"></div></div>
+<div class="metric"><div class="metric-label">Night workload range <span title="Minimum–maximum night assignments among eligible doctors in the selected scope.">ⓘ</span></div><div class="metric-value" id="night-value"></div><div class="metric-note" id="night-note"></div></div>
+<div class="metric"><div class="metric-label">Weekend workload range <span title="Assignments starting Saturday or Sunday, per weekend-eligible doctor.">ⓘ</span></div><div class="metric-value" id="weekend-value"></div><div class="metric-note" id="weekend-note"></div></div>
 </section>
 <nav class="tabs" aria-label="Dashboard views" role="tablist"><button class="tab" id="roster-tab" role="tab" aria-selected="true" aria-controls="roster-view">Calendar</button><button class="tab" id="workload-tab" role="tab" aria-selected="false" aria-controls="workload-view" tabindex="-1">Workload</button></nav>
 <div class="scope-line" id="scope" aria-live="polite"></div>
 <section id="roster-view" role="tabpanel" aria-labelledby="roster-tab"><div class="panel calendar-panel"><div class="panel-head"><div><h2 id="calendar-month"></h2><p id="roster-description"></p></div><div class="legend" id="roster-legend"></div></div><div class="scroll calendar-scroll" tabindex="0" aria-label="Weekly calendar; scroll horizontally on small screens"><table id="roster" class="calendar-table" aria-label="Weekly on-call calendar"><thead id="roster-head"></thead><tbody id="roster-body"></tbody></table></div><div class="table-note">Night shifts end the next morning. Weekends are classified by the shift's start date.</div></div></section>
-<section id="workload-view" role="tabpanel" aria-labelledby="workload-tab" hidden><div class="chart-grid"><div class="panel"><div class="panel-head"><div><h2>Assignments by doctor</h2><p>Selected scope, split by shift</p></div></div><div id="total-chart" class="chart" role="img" aria-label="Stacked chart of shifts assigned to each doctor"></div></div><div class="panel"><div class="panel-head"><div><h2>Night and weekend distribution</h2><p>Night shifts apply to eligible juniors only</p></div></div><div id="fairness-chart" class="chart" role="img" aria-label="Night and weekend shifts per doctor"></div></div></div><div class="panel"><div class="panel-head"><div><h2>Doctor workload</h2><p>Assignment counts and hours follow the selected scope</p></div></div><div class="scroll"><table class="summary-table" aria-label="Workload by doctor"><thead><tr><th>Doctor</th><th>Total shifts</th><th>Nights</th><th>Weekends</th><th>Hours</th><th>Horizon load / capacity</th></tr></thead><tbody id="summary-body"></tbody></table></div><div class="table-note">Horizon load and capacity always cover the full planning horizon. Night hours include time after midnight.</div></div></section>
+<section id="workload-view" role="tabpanel" aria-labelledby="workload-tab" hidden><div class="chart-grid"><div class="panel"><div class="panel-head"><div><h2>Assignments by doctor</h2><p>Selected scope, split by shift</p></div></div><div id="total-chart" class="chart" role="img" aria-label="Stacked chart of shifts assigned to each doctor"></div></div><div class="panel"><div class="panel-head"><div><h2>Night and weekend distribution</h2><p>Night shifts shown for eligible doctors</p></div></div><div id="fairness-chart" class="chart" role="img" aria-label="Night and weekend shifts per doctor"></div></div></div><div class="panel"><div class="panel-head"><div><h2>Doctor workload</h2><p>Assignment counts and hours follow the selected scope</p></div></div><div class="scroll"><table class="summary-table" aria-label="Workload by doctor"><thead><tr><th>Doctor</th><th>Total shifts</th><th>Nights</th><th>Weekends</th><th>Hours</th><th>Horizon load / capacity</th></tr></thead><tbody id="summary-body"></tbody></table></div><div class="table-note">Horizon load and capacity always cover the full planning horizon. Night hours include time after midnight.</div></div></section>
 <footer><span id="source-label"></span><span id="generated-label"></span></footer>
 </main>
 <dialog id="details-dialog"><div class="dialog-head"><h2 id="dialog-title"></h2><button class="button" id="close-dialog" aria-label="Close details">Close</button></div><div id="dialog-body" class="dialog-body"></div></dialog>
@@ -140,7 +147,9 @@ for(const week of [...new Set(input.days.map(d=>d.week))]){const days=input.days
 input.doctors.forEach(p=>option($('doctor-filter'),p.id,p.name));
 input.shifts.forEach(s=>option($('shift-filter'),s.id,s.name));
 $('horizon').textContent=`${dateRange(input.days)} · ${input.doctors.length} doctors · ${input.days.length} days`;
-$('checks-label').textContent=`${plan.validation.checks.length} checks passed`;
+$('checks-label').textContent=`${plan.validation.checks.filter(c=>c.enabled!==false&&c.passed).length} checks passed`;
+const modifiedRules=Object.values(plan.rule_settings??{}).some(value=>value===false);
+if(modifiedRules){const badge=document.createElement('span');badge.className='badge';badge.textContent='Modified rules';badge.title='Some workbook constraints or default rules were changed in the notebook.';document.querySelector('.status-row').appendChild(badge);}
 $('source-label').textContent=`Source: ${plan.source.file}`;
 $('generated-label').textContent=`Generated ${new Date(plan.generated_at).toLocaleString('en-GB',{dateStyle:'medium',timeStyle:'short'})}`;
 function selectedShifts(){return input.shifts.filter(s=>state.shift==='all'||s.id===state.shift);}
@@ -157,9 +166,10 @@ function refresh(){
  $('total-value').textContent=range(total);
  $('total-note').textContent=`shifts per ${scopedDoctors.length===1?'selected doctor':'doctor'}`;
  $('night-value').textContent=range(eligible.map(p=>counts(scopedRows,p.id,a=>a.shift_id==='Night')));
- $('night-note').textContent=eligible.length?`shifts · ${eligible.length} eligible junior${eligible.length===1?'':'s'}`:'Selected doctor is not night-eligible';
- $('weekend-value').textContent=range(scopedDoctors.map(p=>counts(scopedRows,p.id,a=>a.is_weekend)));
- $('weekend-note').textContent='weekend shifts per doctor';
+ $('night-note').textContent=eligible.length?`shifts · ${eligible.length} eligible doctor${eligible.length===1?'':'s'}`:'Selected doctor is not night-eligible';
+ const weekendEligible=scopedDoctors.filter(p=>!plan.weekend_eligible||plan.weekend_eligible.includes(p.id));
+ $('weekend-value').textContent=range(weekendEligible.map(p=>counts(scopedRows,p.id,a=>a.is_weekend)));
+ $('weekend-note').textContent=weekendEligible.length?'shifts per weekend-eligible doctor':'Selected doctor cannot work weekends';
  const shiftLabel=state.shift==='all'?'All shifts':input.shifts.find(s=>s.id===state.shift).name;
  const doctorLabel=state.doctor==='all'?'All doctors':scopedDoctors[0].name;
  $('scope').textContent=`${dateRange(scopedDays)} · ${doctorLabel} · ${shiftLabel}`;
@@ -196,8 +206,10 @@ function renderRoster(){
    if(!rows.length){
     const unavailable=state.doctor!=='all'&&input.unavailability.some(u=>u.doctor_id===state.doctor&&u.day===d.day);
     const required=input.demand.filter(r=>r.day===d.day&&shifts.some(s=>s.id===r.shift_id)).reduce((sum,r)=>sum+r.required,0);
-    content=unavailable?'<span class="unavailable">Unavailable</span>':`<span class="empty-cell">${required===0?'No shifts required':state.doctor!=='all'&&state.shift==='all'?'Off duty':'No matching shifts'}</span>`;
+    content=unavailable?'<span class="unavailable">Unavailable</span>':`<span class="empty-cell">${required===0?'No shifts required':state.doctor==='all'?'Unfilled · '+required+' positions':state.shift==='all'?'Off duty':'No matching shifts'}</span>`;
    }
+   const requiredCount=input.demand.filter(r=>r.day===d.day&&shifts.some(s=>s.id===r.shift_id)).reduce((sum,r)=>sum+r.required,0);
+   if(state.doctor==='all'&&rows.length&&rows.length<requiredCount)content+=`<span class="empty-cell">${requiredCount-rows.length} unfilled positions</span>`;
    cells.push(`<td class="calendar-day ${d.is_weekend?'weekend-column':''}" data-date="${d.date}" aria-label="${escapeHTML(d.weekday)}, ${d.date}"><div class="calendar-date"><span>${dayDate.getUTCDate()}</span><span class="calendar-month-label">${dateText(d.date,{month:'short'})}</span></div><div class="calendar-events">${content}</div></td>`);
   }
   weeks.push('<tr>'+cells.join('')+'</tr>');
@@ -220,7 +232,7 @@ function renderCharts(){
   legend:{orientation:'h',x:0,y:narrow?-.43:-.25,font:{size:10}},xaxis:{fixedrange:true,tickangle:narrow?-32:0,tickfont:{size:11}},yaxis:{fixedrange:true,title:{text:'Shifts',font:{size:10}},rangemode:'tozero',dtick:1,gridcolor:'#eef1f5',zeroline:false},hovermode:'closest'};
  const totalTraces=input.shifts.map(s=>({type:'bar',name:s.name,x:names,y:scopedDoctors.map(p=>counts(scopedRows,p.id,a=>a.shift_id===s.id)),marker:{color:colors[s.id]},hovertemplate:'%{x}<br>'+escapeHTML(s.name)+': %{y} shifts<extra></extra>'}));
  const nightY=scopedDoctors.map(p=>plan.night_eligible.includes(p.id)?counts(scopedRows,p.id,a=>a.shift_id==='Night'):null);
- const fairnessTraces=[{type:'bar',name:'Night (eligible juniors)',x:names,y:nightY,marker:{color:colors.Night},hovertemplate:'%{x}<br>Night: %{y} shifts<extra></extra>'},
+ const fairnessTraces=[{type:'bar',name:'Night (eligible doctors)',x:names,y:nightY,marker:{color:colors.Night},hovertemplate:'%{x}<br>Night: %{y} shifts<extra></extra>'},
   {type:'bar',name:'Weekend',x:names,y:scopedDoctors.map(p=>counts(scopedRows,p.id,a=>a.is_weekend)),marker:{color:'#a18855'},hovertemplate:'%{x}<br>Weekend: %{y} shifts<extra></extra>'}];
  const maxCount=Math.max(1,...scopedDoctors.map(p=>counts(scopedRows,p.id)));
  const mainLayout={...layout,yaxis:{...layout.yaxis,range:[0,maxCount+1]}};
@@ -245,12 +257,12 @@ function showAssignment(index){
  const off=input.unavailability.filter(u=>u.doctor_id===p.id).map(u=>input.days.find(d=>d.day===u.day).date);
  showDialog(a.doctor_name,`<dl class="details-grid"><div><dt>Shift</dt><dd>${escapeHTML(s.name)} · ${escapeHTML(a.seniority)}</dd></div><div><dt>Start date</dt><dd>${dateText(a.date,{weekday:'long',day:'numeric',month:'short',year:'numeric'})}</dd></div><div><dt>Starts</dt><dd>${escapeHTML(a.start.replace('T',' · '))}</dd></div><div><dt>Ends</dt><dd>${escapeHTML(a.end.replace('T',' · '))}</dd></div><div><dt>Duration</dt><dd>${a.hours} hours</dd></div><div><dt>Full-horizon workload</dt><dd>${counts(allRows,p.id)} / ${p.max_shifts} shifts</dd></div></dl><h3>Unavailable dates</h3><p>${off.length?off.map(d=>dateText(d)).join(', '):'None'}</p><div class="dialog-actions"><button class="button primary" data-doctor="${escapeHTML(p.id)}">View this doctor's assignments</button></div>`);
 }
-function checksHTML(){return plan.validation.checks.map(c=>`<div class="check"><span>${escapeHTML(c.name)}</span><span>${c.passed?'Passed':'Failed'} · ${c.violations} violations</span></div>`).join('');}
+function checksHTML(){return plan.validation.checks.map(c=>`<div class="check"><span>${escapeHTML(c.name)}</span><span${c.enabled===false?' style="color:var(--muted)"':''}>${c.enabled===false?'Disabled':(c.passed?'Passed':'Failed')+' · '+c.violations+' violations'}</span></div>`).join('');}
 function showSource(){
  const stages=plan.solver.stages.map((s,i)=>`<tr><td>${i+1}</td><td>${escapeHTML(s.name)}</td><td>${s.optimum}</td><td>${escapeHTML(s.status)}</td></tr>`).join('');
  const doctors=input.doctors.map(p=>`<tr><td>${doctorName(p.name,p.seniority)}</td><td>${escapeHTML(p.seniority)}</td><td>${p.max_shifts}</td></tr>`).join('');
  const unavailability=input.unavailability.map(u=>`<tr><td>${escapeHTML(input.doctors.find(p=>p.id===u.doctor_id).name)}</td><td>${dateText(input.days.find(d=>d.day===u.day).date,{day:'numeric',month:'short',year:'numeric'})}</td></tr>`).join('');
- showDialog('Source & rules',`<h3>Workbook</h3><p>${escapeHTML(plan.source.file)} · ${escapeHTML(plan.source.classification)}</p><p class="small-note">Sheets: ${plan.source.sheets.map(escapeHTML).join(', ')}</p><p class="hash">SHA-256: ${escapeHTML(plan.source.sha256)}</p><h3>Scheduling rules</h3><ul>${plan.rules.map(r=>`<li>${escapeHTML(r)}</li>`).join('')}</ul><h3>Fairness objectives · full horizon</h3><p>Each stage minimizes the maximum minus minimum assignment count while preserving earlier optima. Fairness balances shift counts, not working hours.</p><div class="scroll"><table><thead><tr><th>Priority</th><th>Objective</th><th>Spread</th><th>Status</th></tr></thead><tbody>${stages}</tbody></table></div><h3>Doctors</h3><table><thead><tr><th>Name</th><th>Seniority</th><th>Horizon capacity</th></tr></thead><tbody>${doctors}</tbody></table><h3>Unavailable dates</h3><table><thead><tr><th>Doctor</th><th>Date</th></tr></thead><tbody>${unavailability||'<tr><td colspan="2">None</td></tr>'}</tbody></table><h3>Constraint checks</h3>${checksHTML()}<h3>Source notes</h3><ul>${plan.source.readme.map(r=>`<li>${escapeHTML(r)}</li>`).join('')}</ul>`);
+ showDialog('Source & rules',`<h3>Workbook</h3><p>${escapeHTML(plan.source.file)} · ${escapeHTML(plan.source.classification)}</p><p class="small-note">Sheets: ${plan.source.sheets.map(escapeHTML).join(', ')}</p><p class="hash">SHA-256: ${escapeHTML(plan.source.sha256)}</p><h3>Scheduling rules</h3><ul>${plan.rules.map(r=>`<li>${escapeHTML(r)}</li>`).join('')}</ul><h3>Fairness objectives · full horizon</h3><p>${plan.rule_settings?.fairness===false?'Workload balancing is disabled; only feasibility was requested.':'Each stage minimizes the maximum minus minimum assignment count while preserving earlier optima. Night and weekend stages compare eligible doctors. Fairness balances shift counts, not working hours.'}</p><div class="scroll"><table><thead><tr><th>Priority</th><th>Objective</th><th>Spread</th><th>Status</th></tr></thead><tbody>${stages}</tbody></table></div><h3>Doctors</h3><table><thead><tr><th>Name</th><th>Seniority</th><th>Horizon capacity</th></tr></thead><tbody>${doctors}</tbody></table><h3>Unavailable dates</h3><table><thead><tr><th>Doctor</th><th>Date</th></tr></thead><tbody>${unavailability||'<tr><td colspan="2">None</td></tr>'}</tbody></table><h3>Constraint checks</h3>${checksHTML()}<h3>Source notes</h3><ul>${plan.source.readme.map(r=>`<li>${escapeHTML(r)}</li>`).join('')}</ul>`);
 }
 function csvValue(value){let s=String(value??'');if(/^[=+\-@\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';}
 function exportCSV(){
@@ -313,14 +325,14 @@ def shift_interval(calendar_date, shift):
     return start, end
 
 
-def collect_result(data, x, stages, night_doctors):
+def collect_result(data, x, stages, night_doctors, rule_settings=None, weekend_doctors=None):
     doctors, days, shifts = data["doctors"], data["days"], data["shifts"]
     assignments = []
     for d in days:
         for s in shifts:
             start, end = shift_interval(d["date"], s)
             for p in doctors:
-                if x[p["id"], d["day"], s["id"]].value() > 0.5:
+                if (x[p["id"], d["day"], s["id"]].value() or 0) > 0.5:
                     assignments.append(
                         {
                             "doctor_id": p["id"],
@@ -338,7 +350,7 @@ def collect_result(data, x, stages, night_doctors):
                             "hours": (end - start).total_seconds() / 3600,
                         }
                     )
-    return {
+    result = {
         "schema_version": 1,
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "source": data["source"],
@@ -347,22 +359,34 @@ def collect_result(data, x, stages, night_doctors):
             for k in ("doctors", "shifts", "days", "demand", "unavailability")
         },
         "solver": {"name": "PuLP / CBC", "status": "Optimal", "stages": stages},
-        "rules": [
-            "Cover each day and shift exactly as required by Demand.",
-            "Senior doctors cannot work Night shifts.",
-            "Respect every doctor's MaxShifts and unavailable dates.",
-            "At most one shift per doctor per start date; no overlapping shifts.",
-            "Fairness priority: total shift spread, junior night shift spread, then weekend shift spread.",
-            "Weekend assignments use the shift's start date.",
-            "No additional minimum rest period or consecutive-day limit is imposed.",
-        ],
+        "rules": [],
         "night_eligible": [p["id"] for p in night_doctors],
         "assignments": assignments,
     }
+    settings = {**DEFAULT_RULE_SETTINGS, **(rule_settings or {})}
+    if weekend_doctors is None:
+        weekend_doctors = [p for p in doctors if settings["senior_weekends_allowed"] or p["seniority"] == "Junior"]
+    result["rule_settings"] = settings
+    result["weekend_eligible"] = [p["id"] for p in weekend_doctors]
+    labels = {
+        "coverage": "Exact shift coverage",
+        "capacity": "Individual total capacity",
+        "daily_limit": "At most one shift per doctor per day",
+        "unavailability": "Respect unavailable dates",
+        "senior_night": "Prohibit senior night shifts",
+        "senior_weekends_allowed": "Allow senior weekend shifts",
+        "fairness": "Balance workloads",
+    }
+    result["rules"] = [f"{label}: {'On' if settings[key] else 'Off'}." for key, label in labels.items()]
+    result["rules"] += ["Weekend assignments use the shift's start date.",
+                        "Night and weekend fairness compare doctors eligible for those shifts.",
+                        "No additional minimum rest period or consecutive-day limit is imposed."]
+    return result
 
 
 def audit_schedule(result):
     inputs, assignments = result["inputs"], result["assignments"]
+    settings = {**DEFAULT_RULE_SETTINGS, **result.get("rule_settings", {})}
     doctors = {p["id"]: p for p in inputs["doctors"]}
     days = {d["day"]: d for d in inputs["days"]}
     shifts = {s["id"]: s for s in inputs["shifts"]}
@@ -376,6 +400,7 @@ def audit_schedule(result):
             "Capacity",
             "Unavailability",
             "Night eligibility",
+            "Senior weekend eligibility",
             "No overlap",
         )
     }
@@ -412,6 +437,8 @@ def audit_schedule(result):
             errors["Unavailability"].append(str(key))
         if doctors[pid]["seniority"] == "Senior" and sid == "Night":
             errors["Night eligibility"].append(str(key))
+        if doctors[pid]["seniority"] == "Senior" and days[day]["is_weekend"]:
+            errors["Senior weekend eligibility"].append(str(key))
     required = {(r["day"], r["shift_id"]): r["required"] for r in inputs["demand"]}
     for key in set(required) | set(by_slot):
         if by_slot[key] != required.get(key, 0):
@@ -427,25 +454,28 @@ def audit_schedule(result):
         for first, second in combinations(sorted(intervals), 2):
             if first[0] < second[1] and second[0] < first[1]:
                 errors["No overlap"].append(pid)
-    checks = [
-        {
-            "name": name,
-            "passed": not messages,
-            "violations": len(messages),
-            "details": messages,
-        }
-        for name, messages in errors.items()
-    ]
-    return {
-        "passed": all(c["passed"] for c in checks),
-        "checks": checks,
-        "total_violations": sum(c["violations"] for c in checks),
+    enabled = {
+        "Assignment data": True,
+        "Exact coverage": settings["coverage"],
+        "Daily limit": settings["daily_limit"],
+        "Capacity": settings["capacity"],
+        "Unavailability": settings["unavailability"],
+        "Night eligibility": settings["senior_night"],
+        "Senior weekend eligibility": not settings["senior_weekends_allowed"],
+        "No overlap": True,
     }
+    checks = [{"name": name, "enabled": enabled[name],
+               "passed": not messages if enabled[name] else None,
+               "violations": len(messages), "details": messages}
+              for name, messages in errors.items()]
+    active = [c for c in checks if c["enabled"]]
+    return {"passed": all(c["passed"] for c in active), "checks": checks,
+            "total_violations": sum(c["violations"] for c in active)}
 
 
-def save_schedule(data, x, stages, night_doctors, output_dir):
+def save_schedule(data, x, stages, night_doctors, output_dir, rule_settings=None, weekend_doctors=None):
     """Format the solved variables, audit the result and write the dashboard files."""
-    result = collect_result(data, x, stages, night_doctors)
+    result = collect_result(data, x, stages, night_doctors, rule_settings, weekend_doctors)
     result["validation"] = audit_schedule(result)
     if not result["validation"]["passed"]:
         raise RuntimeError(json.dumps(result["validation"], indent=2))

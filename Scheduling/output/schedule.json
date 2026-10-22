@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-22T08:15:15+00:00",
+  "generated_at": "2026-10-22T09:24:33+00:00",
   "source": {
     "file": "scheduling_dataset.xlsx",
     "sha256": "f629972dc9579621d2067bc2778b0c89a145e8a863a122fe202284211d00fe6d",
@@ -439,17 +439,20 @@
       {
         "name": "Weekend shift spread",
         "status": "Optimal",
-        "optimum": 0
+        "optimum": 2
       }
     ]
   },
   "rules": [
-    "Cover each day and shift exactly as required by Demand.",
-    "Senior doctors cannot work Night shifts.",
-    "Respect every doctor's MaxShifts and unavailable dates.",
-    "At most one shift per doctor per start date; no overlapping shifts.",
-    "Fairness priority: total shift spread, junior night shift spread, then weekend shift spread.",
+    "Exact shift coverage: On.",
+    "Individual total capacity: On.",
+    "At most one shift per doctor per day: On.",
+    "Respect unavailable dates: On.",
+    "Prohibit senior night shifts: On.",
+    "Allow senior weekend shifts: Off.",
+    "Balance workloads: On.",
     "Weekend assignments use the shift's start date.",
+    "Night and weekend fairness compare doctors eligible for those shifts.",
     "No additional minimum rest period or consecutive-day limit is imposed."
   ],
   "night_eligible": [
@@ -505,8 +508,8 @@
       "hours": 9.5
     },
     {
-      "doctor_id": "D6",
-      "doctor_name": "Dr. Foster",
+      "doctor_id": "D3",
+      "doctor_name": "Dr. Carter",
       "seniority": "Junior",
       "day": 1,
       "date": "2025-11-04",
@@ -520,9 +523,9 @@
       "hours": 7.5
     },
     {
-      "doctor_id": "D4",
-      "doctor_name": "Dr. Diaz",
-      "seniority": "Junior",
+      "doctor_id": "D1",
+      "doctor_name": "Dr. Adams",
+      "seniority": "Senior",
       "day": 1,
       "date": "2025-11-04",
       "weekday": "Tuesday",
@@ -535,8 +538,8 @@
       "hours": 7.0
     },
     {
-      "doctor_id": "D3",
-      "doctor_name": "Dr. Carter",
+      "doctor_id": "D6",
+      "doctor_name": "Dr. Foster",
       "seniority": "Junior",
       "day": 1,
       "date": "2025-11-04",
@@ -550,8 +553,8 @@
       "hours": 9.5
     },
     {
-      "doctor_id": "D5",
-      "doctor_name": "Dr. Evans",
+      "doctor_id": "D4",
+      "doctor_name": "Dr. Diaz",
       "seniority": "Junior",
       "day": 2,
       "date": "2025-11-05",
@@ -565,9 +568,9 @@
       "hours": 7.5
     },
     {
-      "doctor_id": "D3",
-      "doctor_name": "Dr. Carter",
-      "seniority": "Junior",
+      "doctor_id": "D2",
+      "doctor_name": "Dr. Brown",
+      "seniority": "Senior",
       "day": 2,
       "date": "2025-11-05",
       "weekday": "Wednesday",
@@ -580,8 +583,8 @@
       "hours": 7.0
     },
     {
-      "doctor_id": "D4",
-      "doctor_name": "Dr. Diaz",
+      "doctor_id": "D6",
+      "doctor_name": "Dr. Foster",
       "seniority": "Junior",
       "day": 2,
       "date": "2025-11-05",
@@ -595,8 +598,8 @@
       "hours": 9.5
     },
     {
-      "doctor_id": "D2",
-      "doctor_name": "Dr. Brown",
+      "doctor_id": "D1",
+      "doctor_name": "Dr. Adams",
       "seniority": "Senior",
       "day": 3,
       "date": "2025-11-06",
@@ -610,8 +613,8 @@
       "hours": 7.5
     },
     {
-      "doctor_id": "D1",
-      "doctor_name": "Dr. Adams",
+      "doctor_id": "D2",
+      "doctor_name": "Dr. Brown",
       "seniority": "Senior",
       "day": 3,
       "date": "2025-11-06",
@@ -640,9 +643,9 @@
       "hours": 9.5
     },
     {
-      "doctor_id": "D3",
-      "doctor_name": "Dr. Carter",
-      "seniority": "Junior",
+      "doctor_id": "D2",
+      "doctor_name": "Dr. Brown",
+      "seniority": "Senior",
       "day": 4,
       "date": "2025-11-07",
       "weekday": "Friday",
@@ -670,8 +673,8 @@
       "hours": 7.0
     },
     {
-      "doctor_id": "D6",
-      "doctor_name": "Dr. Foster",
+      "doctor_id": "D3",
+      "doctor_name": "Dr. Carter",
       "seniority": "Junior",
       "day": 4,
       "date": "2025-11-07",
@@ -685,9 +688,9 @@
       "hours": 9.5
     },
     {
-      "doctor_id": "D1",
-      "doctor_name": "Dr. Adams",
-      "seniority": "Senior",
+      "doctor_id": "D6",
+      "doctor_name": "Dr. Foster",
+      "seniority": "Junior",
       "day": 5,
       "date": "2025-11-08",
       "weekday": "Saturday",
@@ -700,8 +703,8 @@
       "hours": 7.5
     },
     {
-      "doctor_id": "D6",
-      "doctor_name": "Dr. Foster",
+      "doctor_id": "D4",
+      "doctor_name": "Dr. Diaz",
       "seniority": "Junior",
       "day": 5,
       "date": "2025-11-08",
@@ -730,8 +733,8 @@
       "hours": 9.5
     },
     {
-      "doctor_id": "D4",
-      "doctor_name": "Dr. Diaz",
+      "doctor_id": "D6",
+      "doctor_name": "Dr. Foster",
       "seniority": "Junior",
       "day": 6,
       "date": "2025-11-09",
@@ -745,9 +748,9 @@
       "hours": 7.5
     },
     {
-      "doctor_id": "D1",
-      "doctor_name": "Dr. Adams",
-      "seniority": "Senior",
+      "doctor_id": "D5",
+      "doctor_name": "Dr. Evans",
+      "seniority": "Junior",
       "day": 6,
       "date": "2025-11-09",
       "weekday": "Sunday",
@@ -760,8 +763,8 @@
       "hours": 7.0
     },
     {
-      "doctor_id": "D6",
-      "doctor_name": "Dr. Foster",
+      "doctor_id": "D4",
+      "doctor_name": "Dr. Diaz",
       "seniority": "Junior",
       "day": 6,
       "date": "2025-11-09",
@@ -775,9 +778,9 @@
       "hours": 9.5
     },
     {
-      "doctor_id": "D4",
-      "doctor_name": "Dr. Diaz",
-      "seniority": "Junior",
+      "doctor_id": "D1",
+      "doctor_name": "Dr. Adams",
+      "seniority": "Senior",
       "day": 7,
       "date": "2025-11-10",
       "weekday": "Monday",
@@ -790,9 +793,9 @@
       "hours": 7.5
     },
     {
-      "doctor_id": "D5",
-      "doctor_name": "Dr. Evans",
-      "seniority": "Junior",
+      "doctor_id": "D2",
+      "doctor_name": "Dr. Brown",
+      "seniority": "Senior",
       "day": 7,
       "date": "2025-11-10",
       "weekday": "Monday",
@@ -805,8 +808,8 @@
       "hours": 7.0
     },
     {
-      "doctor_id": "D6",
-      "doctor_name": "Dr. Foster",
+      "doctor_id": "D4",
+      "doctor_name": "Dr. Diaz",
       "seniority": "Junior",
       "day": 7,
       "date": "2025-11-10",
@@ -820,8 +823,8 @@
       "hours": 9.5
     },
     {
-      "doctor_id": "D3",
-      "doctor_name": "Dr. Carter",
+      "doctor_id": "D6",
+      "doctor_name": "Dr. Foster",
       "seniority": "Junior",
       "day": 8,
       "date": "2025-11-11",
@@ -835,8 +838,8 @@
       "hours": 7.5
     },
     {
-      "doctor_id": "D2",
-      "doctor_name": "Dr. Brown",
+      "doctor_id": "D1",
+      "doctor_name": "Dr. Adams",
       "seniority": "Senior",
       "day": 8,
       "date": "2025-11-11",
@@ -865,9 +868,9 @@
       "hours": 9.5
     },
     {
-      "doctor_id": "D1",
-      "doctor_name": "Dr. Adams",
-      "seniority": "Senior",
+      "doctor_id": "D3",
+      "doctor_name": "Dr. Carter",
+      "seniority": "Junior",
       "day": 9,
       "date": "2025-11-12",
       "weekday": "Wednesday",
@@ -910,9 +913,9 @@
       "hours": 9.5
     },
     {
-      "doctor_id": "D6",
-      "doctor_name": "Dr. Foster",
-      "seniority": "Junior",
+      "doctor_id": "D2",
+      "doctor_name": "Dr. Brown",
+      "seniority": "Senior",
       "day": 10,
       "date": "2025-11-13",
       "weekday": "Thursday",
@@ -925,9 +928,9 @@
       "hours": 7.5
     },
     {
-      "doctor_id": "D2",
-      "doctor_name": "Dr. Brown",
-      "seniority": "Senior",
+      "doctor_id": "D5",
+      "doctor_name": "Dr. Evans",
+      "seniority": "Junior",
       "day": 10,
       "date": "2025-11-13",
       "weekday": "Thursday",
@@ -940,8 +943,8 @@
       "hours": 7.0
     },
     {
-      "doctor_id": "D5",
-      "doctor_name": "Dr. Evans",
+      "doctor_id": "D4",
+      "doctor_name": "Dr. Diaz",
       "seniority": "Junior",
       "day": 10,
       "date": "2025-11-13",
@@ -955,9 +958,9 @@
       "hours": 9.5
     },
     {
-      "doctor_id": "D1",
-      "doctor_name": "Dr. Adams",
-      "seniority": "Senior",
+      "doctor_id": "D5",
+      "doctor_name": "Dr. Evans",
+      "seniority": "Junior",
       "day": 11,
       "date": "2025-11-14",
       "weekday": "Friday",
@@ -970,9 +973,9 @@
       "hours": 7.5
     },
     {
-      "doctor_id": "D4",
-      "doctor_name": "Dr. Diaz",
-      "seniority": "Junior",
+      "doctor_id": "D1",
+      "doctor_name": "Dr. Adams",
+      "seniority": "Senior",
       "day": 11,
       "date": "2025-11-14",
       "weekday": "Friday",
@@ -985,8 +988,8 @@
       "hours": 7.0
     },
     {
-      "doctor_id": "D5",
-      "doctor_name": "Dr. Evans",
+      "doctor_id": "D3",
+      "doctor_name": "Dr. Carter",
       "seniority": "Junior",
       "day": 11,
       "date": "2025-11-14",
@@ -1000,8 +1003,8 @@
       "hours": 9.5
     },
     {
-      "doctor_id": "D3",
-      "doctor_name": "Dr. Carter",
+      "doctor_id": "D4",
+      "doctor_name": "Dr. Diaz",
       "seniority": "Junior",
       "day": 12,
       "date": "2025-11-15",
@@ -1015,9 +1018,9 @@
       "hours": 7.5
     },
     {
-      "doctor_id": "D2",
-      "doctor_name": "Dr. Brown",
-      "seniority": "Senior",
+      "doctor_id": "D3",
+      "doctor_name": "Dr. Carter",
+      "seniority": "Junior",
       "day": 12,
       "date": "2025-11-15",
       "weekday": "Saturday",
@@ -1030,8 +1033,8 @@
       "hours": 7.0
     },
     {
-      "doctor_id": "D4",
-      "doctor_name": "Dr. Diaz",
+      "doctor_id": "D5",
+      "doctor_name": "Dr. Evans",
       "seniority": "Junior",
       "day": 12,
       "date": "2025-11-15",
@@ -1045,9 +1048,9 @@
       "hours": 9.5
     },
     {
-      "doctor_id": "D2",
-      "doctor_name": "Dr. Brown",
-      "seniority": "Senior",
+      "doctor_id": "D6",
+      "doctor_name": "Dr. Foster",
+      "seniority": "Junior",
       "day": 13,
       "date": "2025-11-16",
       "weekday": "Sunday",
@@ -1060,8 +1063,8 @@
       "hours": 7.5
     },
     {
-      "doctor_id": "D5",
-      "doctor_name": "Dr. Evans",
+      "doctor_id": "D3",
+      "doctor_name": "Dr. Carter",
       "seniority": "Junior",
       "day": 13,
       "date": "2025-11-16",
@@ -1075,8 +1078,8 @@
       "hours": 7.0
     },
     {
-      "doctor_id": "D3",
-      "doctor_name": "Dr. Carter",
+      "doctor_id": "D5",
+      "doctor_name": "Dr. Evans",
       "seniority": "Junior",
       "day": 13,
       "date": "2025-11-16",
@@ -1090,47 +1093,76 @@
       "hours": 9.5
     }
   ],
+  "rule_settings": {
+    "coverage": true,
+    "capacity": true,
+    "daily_limit": true,
+    "unavailability": true,
+    "senior_night": true,
+    "senior_weekends_allowed": false,
+    "fairness": true
+  },
+  "weekend_eligible": [
+    "D3",
+    "D4",
+    "D5",
+    "D6"
+  ],
   "validation": {
     "passed": true,
     "checks": [
       {
         "name": "Assignment data",
+        "enabled": true,
         "passed": true,
         "violations": 0,
         "details": []
       },
       {
         "name": "Exact coverage",
+        "enabled": true,
         "passed": true,
         "violations": 0,
         "details": []
       },
       {
         "name": "Daily limit",
+        "enabled": true,
         "passed": true,
         "violations": 0,
         "details": []
       },
       {
         "name": "Capacity",
+        "enabled": true,
         "passed": true,
         "violations": 0,
         "details": []
       },
       {
         "name": "Unavailability",
+        "enabled": true,
         "passed": true,
         "violations": 0,
         "details": []
       },
       {
         "name": "Night eligibility",
+        "enabled": true,
+        "passed": true,
+        "violations": 0,
+        "details": []
+      },
+      {
+        "name": "Senior weekend eligibility",
+        "enabled": true,
         "passed": true,
         "violations": 0,
         "details": []
       },
       {
         "name": "No overlap",
+        "enabled": true,
         "passed": true,
         "violations": 0,
         "details": []
