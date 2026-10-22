@@ -1,0 +1,1141 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-22T08:15:15+00:00",
+  "source": {
+    "file": "scheduling_dataset.xlsx",
+    "sha256": "f629972dc9579621d2067bc2778b0c89a145e8a863a122fe202284211d00fe6d",
+    "sheets": [
+      "Doctors",
+      "Shifts",
+      "Horizon",
+      "Demand",
+      "Unavailability"
+    ],
+    "classification": "Teaching dataset",
+    "readme": [
+      "Physician On-Call Scheduling - Teaching Dataset",
+      "A scaled-down version of a real SOS Médecins rostering problem.",
+      "Sheet | Meaning",
+      "Doctors | 6 doctors. Seniority (Senior cannot take Night shifts). MaxShifts = capacity over the 2 weeks.",
+      "Shifts | 3 shift types per day: Day, Evening, Night.",
+      "Horizon | 14 days (2 weeks), Mon 2025-11-03 to Sun 2025-11-16. IsWeekend flag.",
+      "Demand | How many doctors each (Day, Shift) needs. Here always 1.",
+      "Unavailability | (Doctor, Day) pairs where the doctor cannot work any shift.",
+      "Goal | Assign exactly one doctor to every shift, respecting all rules, as FAIRLY as possible."
+    ]
+  },
+  "inputs": {
+    "doctors": [
+      {
+        "id": "D1",
+        "name": "Dr. Adams",
+        "seniority": "Senior",
+        "max_shifts": 8
+      },
+      {
+        "id": "D2",
+        "name": "Dr. Brown",
+        "seniority": "Senior",
+        "max_shifts": 8
+      },
+      {
+        "id": "D3",
+        "name": "Dr. Carter",
+        "seniority": "Junior",
+        "max_shifts": 8
+      },
+      {
+        "id": "D4",
+        "name": "Dr. Diaz",
+        "seniority": "Junior",
+        "max_shifts": 8
+      },
+      {
+        "id": "D5",
+        "name": "Dr. Evans",
+        "seniority": "Junior",
+        "max_shifts": 7
+      },
+      {
+        "id": "D6",
+        "name": "Dr. Foster",
+        "seniority": "Junior",
+        "max_shifts": 7
+      }
+    ],
+    "shifts": [
+      {
+        "id": "Day",
+        "name": "Daytime",
+        "start": "08:30",
+        "end": "16:00"
+      },
+      {
+        "id": "Evening",
+        "name": "Evening",
+        "start": "16:00",
+        "end": "23:00"
+      },
+      {
+        "id": "Night",
+        "name": "Night",
+        "start": "23:00",
+        "end": "08:30"
+      }
+    ],
+    "days": [
+      {
+        "day": 0,
+        "date": "2025-11-03",
+        "weekday": "Monday",
+        "is_weekend": false,
+        "week": 1
+      },
+      {
+        "day": 1,
+        "date": "2025-11-04",
+        "weekday": "Tuesday",
+        "is_weekend": false,
+        "week": 1
+      },
+      {
+        "day": 2,
+        "date": "2025-11-05",
+        "weekday": "Wednesday",
+        "is_weekend": false,
+        "week": 1
+      },
+      {
+        "day": 3,
+        "date": "2025-11-06",
+        "weekday": "Thursday",
+        "is_weekend": false,
+        "week": 1
+      },
+      {
+        "day": 4,
+        "date": "2025-11-07",
+        "weekday": "Friday",
+        "is_weekend": false,
+        "week": 1
+      },
+      {
+        "day": 5,
+        "date": "2025-11-08",
+        "weekday": "Saturday",
+        "is_weekend": true,
+        "week": 1
+      },
+      {
+        "day": 6,
+        "date": "2025-11-09",
+        "weekday": "Sunday",
+        "is_weekend": true,
+        "week": 1
+      },
+      {
+        "day": 7,
+        "date": "2025-11-10",
+        "weekday": "Monday",
+        "is_weekend": false,
+        "week": 2
+      },
+      {
+        "day": 8,
+        "date": "2025-11-11",
+        "weekday": "Tuesday",
+        "is_weekend": false,
+        "week": 2
+      },
+      {
+        "day": 9,
+        "date": "2025-11-12",
+        "weekday": "Wednesday",
+        "is_weekend": false,
+        "week": 2
+      },
+      {
+        "day": 10,
+        "date": "2025-11-13",
+        "weekday": "Thursday",
+        "is_weekend": false,
+        "week": 2
+      },
+      {
+        "day": 11,
+        "date": "2025-11-14",
+        "weekday": "Friday",
+        "is_weekend": false,
+        "week": 2
+      },
+      {
+        "day": 12,
+        "date": "2025-11-15",
+        "weekday": "Saturday",
+        "is_weekend": true,
+        "week": 2
+      },
+      {
+        "day": 13,
+        "date": "2025-11-16",
+        "weekday": "Sunday",
+        "is_weekend": true,
+        "week": 2
+      }
+    ],
+    "demand": [
+      {
+        "day": 0,
+        "shift_id": "Day",
+        "required": 1
+      },
+      {
+        "day": 0,
+        "shift_id": "Evening",
+        "required": 1
+      },
+      {
+        "day": 0,
+        "shift_id": "Night",
+        "required": 1
+      },
+      {
+        "day": 1,
+        "shift_id": "Day",
+        "required": 1
+      },
+      {
+        "day": 1,
+        "shift_id": "Evening",
+        "required": 1
+      },
+      {
+        "day": 1,
+        "shift_id": "Night",
+        "required": 1
+      },
+      {
+        "day": 2,
+        "shift_id": "Day",
+        "required": 1
+      },
+      {
+        "day": 2,
+        "shift_id": "Evening",
+        "required": 1
+      },
+      {
+        "day": 2,
+        "shift_id": "Night",
+        "required": 1
+      },
+      {
+        "day": 3,
+        "shift_id": "Day",
+        "required": 1
+      },
+      {
+        "day": 3,
+        "shift_id": "Evening",
+        "required": 1
+      },
+      {
+        "day": 3,
+        "shift_id": "Night",
+        "required": 1
+      },
+      {
+        "day": 4,
+        "shift_id": "Day",
+        "required": 1
+      },
+      {
+        "day": 4,
+        "shift_id": "Evening",
+        "required": 1
+      },
+      {
+        "day": 4,
+        "shift_id": "Night",
+        "required": 1
+      },
+      {
+        "day": 5,
+        "shift_id": "Day",
+        "required": 1
+      },
+      {
+        "day": 5,
+        "shift_id": "Evening",
+        "required": 1
+      },
+      {
+        "day": 5,
+        "shift_id": "Night",
+        "required": 1
+      },
+      {
+        "day": 6,
+        "shift_id": "Day",
+        "required": 1
+      },
+      {
+        "day": 6,
+        "shift_id": "Evening",
+        "required": 1
+      },
+      {
+        "day": 6,
+        "shift_id": "Night",
+        "required": 1
+      },
+      {
+        "day": 7,
+        "shift_id": "Day",
+        "required": 1
+      },
+      {
+        "day": 7,
+        "shift_id": "Evening",
+        "required": 1
+      },
+      {
+        "day": 7,
+        "shift_id": "Night",
+        "required": 1
+      },
+      {
+        "day": 8,
+        "shift_id": "Day",
+        "required": 1
+      },
+      {
+        "day": 8,
+        "shift_id": "Evening",
+        "required": 1
+      },
+      {
+        "day": 8,
+        "shift_id": "Night",
+        "required": 1
+      },
+      {
+        "day": 9,
+        "shift_id": "Day",
+        "required": 1
+      },
+      {
+        "day": 9,
+        "shift_id": "Evening",
+        "required": 1
+      },
+      {
+        "day": 9,
+        "shift_id": "Night",
+        "required": 1
+      },
+      {
+        "day": 10,
+        "shift_id": "Day",
+        "required": 1
+      },
+      {
+        "day": 10,
+        "shift_id": "Evening",
+        "required": 1
+      },
+      {
+        "day": 10,
+        "shift_id": "Night",
+        "required": 1
+      },
+      {
+        "day": 11,
+        "shift_id": "Day",
+        "required": 1
+      },
+      {
+        "day": 11,
+        "shift_id": "Evening",
+        "required": 1
+      },
+      {
+        "day": 11,
+        "shift_id": "Night",
+        "required": 1
+      },
+      {
+        "day": 12,
+        "shift_id": "Day",
+        "required": 1
+      },
+      {
+        "day": 12,
+        "shift_id": "Evening",
+        "required": 1
+      },
+      {
+        "day": 12,
+        "shift_id": "Night",
+        "required": 1
+      },
+      {
+        "day": 13,
+        "shift_id": "Day",
+        "required": 1
+      },
+      {
+        "day": 13,
+        "shift_id": "Evening",
+        "required": 1
+      },
+      {
+        "day": 13,
+        "shift_id": "Night",
+        "required": 1
+      }
+    ],
+    "unavailability": [
+      {
+        "doctor_id": "D1",
+        "day": 10
+      },
+      {
+        "doctor_id": "D3",
+        "day": 5
+      },
+      {
+        "doctor_id": "D3",
+        "day": 6
+      },
+      {
+        "doctor_id": "D5",
+        "day": 0
+      },
+      {
+        "doctor_id": "D5",
+        "day": 1
+      },
+      {
+        "doctor_id": "D6",
+        "day": 12
+      }
+    ]
+  },
+  "solver": {
+    "name": "PuLP / CBC",
+    "status": "Optimal",
+    "stages": [
+      {
+        "name": "Total shift spread",
+        "status": "Optimal",
+        "optimum": 0
+      },
+      {
+        "name": "Junior night shift spread",
+        "status": "Optimal",
+        "optimum": 1
+      },
+      {
+        "name": "Weekend shift spread",
+        "status": "Optimal",
+        "optimum": 0
+      }
+    ]
+  },
+  "rules": [
+    "Cover each day and shift exactly as required by Demand.",
+    "Senior doctors cannot work Night shifts.",
+    "Respect every doctor's MaxShifts and unavailable dates.",
+    "At most one shift per doctor per start date; no overlapping shifts.",
+    "Fairness priority: total shift spread, junior night shift spread, then weekend shift spread.",
+    "Weekend assignments use the shift's start date.",
+    "No additional minimum rest period or consecutive-day limit is imposed."
+  ],
+  "night_eligible": [
+    "D3",
+    "D4",
+    "D5",
+    "D6"
+  ],
+  "assignments": [
+    {
+      "doctor_id": "D1",
+      "doctor_name": "Dr. Adams",
+      "seniority": "Senior",
+      "day": 0,
+      "date": "2025-11-03",
+      "weekday": "Monday",
+      "week": 1,
+      "is_weekend": false,
+      "shift_id": "Day",
+      "shift_name": "Daytime",
+      "start": "2025-11-03T08:30",
+      "end": "2025-11-03T16:00",
+      "hours": 7.5
+    },
+    {
+      "doctor_id": "D2",
+      "doctor_name": "Dr. Brown",
+      "seniority": "Senior",
+      "day": 0,
+      "date": "2025-11-03",
+      "weekday": "Monday",
+      "week": 1,
+      "is_weekend": false,
+      "shift_id": "Evening",
+      "shift_name": "Evening",
+      "start": "2025-11-03T16:00",
+      "end": "2025-11-03T23:00",
+      "hours": 7.0
+    },
+    {
+      "doctor_id": "D4",
+      "doctor_name": "Dr. Diaz",
+      "seniority": "Junior",
+      "day": 0,
+      "date": "2025-11-03",
+      "weekday": "Monday",
+      "week": 1,
+      "is_weekend": false,
+      "shift_id": "Night",
+      "shift_name": "Night",
+      "start": "2025-11-03T23:00",
+      "end": "2025-11-04T08:30",
+      "hours": 9.5
+    },
+    {
+      "doctor_id": "D6",
+      "doctor_name": "Dr. Foster",
+      "seniority": "Junior",
+      "day": 1,
+      "date": "2025-11-04",
+      "weekday": "Tuesday",
+      "week": 1,
+      "is_weekend": false,
+      "shift_id": "Day",
+      "shift_name": "Daytime",
+      "start": "2025-11-04T08:30",
+      "end": "2025-11-04T16:00",
+      "hours": 7.5
+    },
+    {
+      "doctor_id": "D4",
+      "doctor_name": "Dr. Diaz",
+      "seniority": "Junior",
+      "day": 1,
+      "date": "2025-11-04",
+      "weekday": "Tuesday",
+      "week": 1,
+      "is_weekend": false,
+      "shift_id": "Evening",
+      "shift_name": "Evening",
+      "start": "2025-11-04T16:00",
+      "end": "2025-11-04T23:00",
+      "hours": 7.0
+    },
+    {
+      "doctor_id": "D3",
+      "doctor_name": "Dr. Carter",
+      "seniority": "Junior",
+      "day": 1,
+      "date": "2025-11-04",
+      "weekday": "Tuesday",
+      "week": 1,
+      "is_weekend": false,
+      "shift_id": "Night",
+      "shift_name": "Night",
+      "start": "2025-11-04T23:00",
+      "end": "2025-11-05T08:30",
+      "hours": 9.5
+    },
+    {
+      "doctor_id": "D5",
+      "doctor_name": "Dr. Evans",
+      "seniority": "Junior",
+      "day": 2,
+      "date": "2025-11-05",
+      "weekday": "Wednesday",
+      "week": 1,
+      "is_weekend": false,
+      "shift_id": "Day",
+      "shift_name": "Daytime",
+      "start": "2025-11-05T08:30",
+      "end": "2025-11-05T16:00",
+      "hours": 7.5
+    },
+    {
+      "doctor_id": "D3",
+      "doctor_name": "Dr. Carter",
+      "seniority": "Junior",
+      "day": 2,
+      "date": "2025-11-05",
+      "weekday": "Wednesday",
+      "week": 1,
+      "is_weekend": false,
+      "shift_id": "Evening",
+      "shift_name": "Evening",
+      "start": "2025-11-05T16:00",
+      "end": "2025-11-05T23:00",
+      "hours": 7.0
+    },
+    {
+      "doctor_id": "D4",
+      "doctor_name": "Dr. Diaz",
+      "seniority": "Junior",
+      "day": 2,
+      "date": "2025-11-05",
+      "weekday": "Wednesday",
+      "week": 1,
+      "is_weekend": false,
+      "shift_id": "Night",
+      "shift_name": "Night",
+      "start": "2025-11-05T23:00",
+      "end": "2025-11-06T08:30",
+      "hours": 9.5
+    },
+    {
+      "doctor_id": "D2",
+      "doctor_name": "Dr. Brown",
+      "seniority": "Senior",
+      "day": 3,
+      "date": "2025-11-06",
+      "weekday": "Thursday",
+      "week": 1,
+      "is_weekend": false,
+      "shift_id": "Day",
+      "shift_name": "Daytime",
+      "start": "2025-11-06T08:30",
+      "end": "2025-11-06T16:00",
+      "hours": 7.5
+    },
+    {
+      "doctor_id": "D1",
+      "doctor_name": "Dr. Adams",
+      "seniority": "Senior",
+      "day": 3,
+      "date": "2025-11-06",
+      "weekday": "Thursday",
+      "week": 1,
+      "is_weekend": false,
+      "shift_id": "Evening",
+      "shift_name": "Evening",
+      "start": "2025-11-06T16:00",
+      "end": "2025-11-06T23:00",
+      "hours": 7.0
+    },
+    {
+      "doctor_id": "D3",
+      "doctor_name": "Dr. Carter",
+      "seniority": "Junior",
+      "day": 3,
+      "date": "2025-11-06",
+      "weekday": "Thursday",
+      "week": 1,
+      "is_weekend": false,
+      "shift_id": "Night",
+      "shift_name": "Night",
+      "start": "2025-11-06T23:00",
+      "end": "2025-11-07T08:30",
+      "hours": 9.5
+    },
+    {
+      "doctor_id": "D3",
+      "doctor_name": "Dr. Carter",
+      "seniority": "Junior",
+      "day": 4,
+      "date": "2025-11-07",
+      "weekday": "Friday",
+      "week": 1,
+      "is_weekend": false,
+      "shift_id": "Day",
+      "shift_name": "Daytime",
+      "start": "2025-11-07T08:30",
+      "end": "2025-11-07T16:00",
+      "hours": 7.5
+    },
+    {
+      "doctor_id": "D1",
+      "doctor_name": "Dr. Adams",
+      "seniority": "Senior",
+      "day": 4,
+      "date": "2025-11-07",
+      "weekday": "Friday",
+      "week": 1,
+      "is_weekend": false,
+      "shift_id": "Evening",
+      "shift_name": "Evening",
+      "start": "2025-11-07T16:00",
+      "end": "2025-11-07T23:00",
+      "hours": 7.0
+    },
+    {
+      "doctor_id": "D6",
+      "doctor_name": "Dr. Foster",
+      "seniority": "Junior",
+      "day": 4,
+      "date": "2025-11-07",
+      "weekday": "Friday",
+      "week": 1,
+      "is_weekend": false,
+      "shift_id": "Night",
+      "shift_name": "Night",
+      "start": "2025-11-07T23:00",
+      "end": "2025-11-08T08:30",
+      "hours": 9.5
+    },
+    {
+      "doctor_id": "D1",
+      "doctor_name": "Dr. Adams",
+      "seniority": "Senior",
+      "day": 5,
+      "date": "2025-11-08",
+      "weekday": "Saturday",
+      "week": 1,
+      "is_weekend": true,
+      "shift_id": "Day",
+      "shift_name": "Daytime",
+      "start": "2025-11-08T08:30",
+      "end": "2025-11-08T16:00",
+      "hours": 7.5
+    },
+    {
+      "doctor_id": "D6",
+      "doctor_name": "Dr. Foster",
+      "seniority": "Junior",
+      "day": 5,
+      "date": "2025-11-08",
+      "weekday": "Saturday",
+      "week": 1,
+      "is_weekend": true,
+      "shift_id": "Evening",
+      "shift_name": "Evening",
+      "start": "2025-11-08T16:00",
+      "end": "2025-11-08T23:00",
+      "hours": 7.0
+    },
+    {
+      "doctor_id": "D5",
+      "doctor_name": "Dr. Evans",
+      "seniority": "Junior",
+      "day": 5,
+      "date": "2025-11-08",
+      "weekday": "Saturday",
+      "week": 1,
+      "is_weekend": true,
+      "shift_id": "Night",
+      "shift_name": "Night",
+      "start": "2025-11-08T23:00",
+      "end": "2025-11-09T08:30",
+      "hours": 9.5
+    },
+    {
+      "doctor_id": "D4",
+      "doctor_name": "Dr. Diaz",
+      "seniority": "Junior",
+      "day": 6,
+      "date": "2025-11-09",
+      "weekday": "Sunday",
+      "week": 1,
+      "is_weekend": true,
+      "shift_id": "Day",
+      "shift_name": "Daytime",
+      "start": "2025-11-09T08:30",
+      "end": "2025-11-09T16:00",
+      "hours": 7.5
+    },
+    {
+      "doctor_id": "D1",
+      "doctor_name": "Dr. Adams",
+      "seniority": "Senior",
+      "day": 6,
+      "date": "2025-11-09",
+      "weekday": "Sunday",
+      "week": 1,
+      "is_weekend": true,
+      "shift_id": "Evening",
+      "shift_name": "Evening",
+      "start": "2025-11-09T16:00",
+      "end": "2025-11-09T23:00",
+      "hours": 7.0
+    },
+    {
+      "doctor_id": "D6",
+      "doctor_name": "Dr. Foster",
+      "seniority": "Junior",
+      "day": 6,
+      "date": "2025-11-09",
+      "weekday": "Sunday",
+      "week": 1,
+      "is_weekend": true,
+      "shift_id": "Night",
+      "shift_name": "Night",
+      "start": "2025-11-09T23:00",
+      "end": "2025-11-10T08:30",
+      "hours": 9.5
+    },
+    {
+      "doctor_id": "D4",
+      "doctor_name": "Dr. Diaz",
+      "seniority": "Junior",
+      "day": 7,
+      "date": "2025-11-10",
+      "weekday": "Monday",
+      "week": 2,
+      "is_weekend": false,
+      "shift_id": "Day",
+      "shift_name": "Daytime",
+      "start": "2025-11-10T08:30",
+      "end": "2025-11-10T16:00",
+      "hours": 7.5
+    },
+    {
+      "doctor_id": "D5",
+      "doctor_name": "Dr. Evans",
+      "seniority": "Junior",
+      "day": 7,
+      "date": "2025-11-10",
+      "weekday": "Monday",
+      "week": 2,
+      "is_weekend": false,
+      "shift_id": "Evening",
+      "shift_name": "Evening",
+      "start": "2025-11-10T16:00",
+      "end": "2025-11-10T23:00",
+      "hours": 7.0
+    },
+    {
+      "doctor_id": "D6",
+      "doctor_name": "Dr. Foster",
+      "seniority": "Junior",
+      "day": 7,
+      "date": "2025-11-10",
+      "weekday": "Monday",
+      "week": 2,
+      "is_weekend": false,
+      "shift_id": "Night",
+      "shift_name": "Night",
+      "start": "2025-11-10T23:00",
+      "end": "2025-11-11T08:30",
+      "hours": 9.5
+    },
+    {
+      "doctor_id": "D3",
+      "doctor_name": "Dr. Carter",
+      "seniority": "Junior",
+      "day": 8,
+      "date": "2025-11-11",
+      "weekday": "Tuesday",
+      "week": 2,
+      "is_weekend": false,
+      "shift_id": "Day",
+      "shift_name": "Daytime",
+      "start": "2025-11-11T08:30",
+      "end": "2025-11-11T16:00",
+      "hours": 7.5
+    },
+    {
+      "doctor_id": "D2",
+      "doctor_name": "Dr. Brown",
+      "seniority": "Senior",
+      "day": 8,
+      "date": "2025-11-11",
+      "weekday": "Tuesday",
+      "week": 2,
+      "is_weekend": false,
+      "shift_id": "Evening",
+      "shift_name": "Evening",
+      "start": "2025-11-11T16:00",
+      "end": "2025-11-11T23:00",
+      "hours": 7.0
+    },
+    {
+      "doctor_id": "D5",
+      "doctor_name": "Dr. Evans",
+      "seniority": "Junior",
+      "day": 8,
+      "date": "2025-11-11",
+      "weekday": "Tuesday",
+      "week": 2,
+      "is_weekend": false,
+      "shift_id": "Night",
+      "shift_name": "Night",
+      "start": "2025-11-11T23:00",
+      "end": "2025-11-12T08:30",
+      "hours": 9.5
+    },
+    {
+      "doctor_id": "D1",
+      "doctor_name": "Dr. Adams",
+      "seniority": "Senior",
+      "day": 9,
+      "date": "2025-11-12",
+      "weekday": "Wednesday",
+      "week": 2,
+      "is_weekend": false,
+      "shift_id": "Day",
+      "shift_name": "Daytime",
+      "start": "2025-11-12T08:30",
+      "end": "2025-11-12T16:00",
+      "hours": 7.5
+    },
+    {
+      "doctor_id": "D2",
+      "doctor_name": "Dr. Brown",
+      "seniority": "Senior",
+      "day": 9,
+      "date": "2025-11-12",
+      "weekday": "Wednesday",
+      "week": 2,
+      "is_weekend": false,
+      "shift_id": "Evening",
+      "shift_name": "Evening",
+      "start": "2025-11-12T16:00",
+      "end": "2025-11-12T23:00",
+      "hours": 7.0
+    },
+    {
+      "doctor_id": "D6",
+      "doctor_name": "Dr. Foster",
+      "seniority": "Junior",
+      "day": 9,
+      "date": "2025-11-12",
+      "weekday": "Wednesday",
+      "week": 2,
+      "is_weekend": false,
+      "shift_id": "Night",
+      "shift_name": "Night",
+      "start": "2025-11-12T23:00",
+      "end": "2025-11-13T08:30",
+      "hours": 9.5
+    },
+    {
+      "doctor_id": "D6",
+      "doctor_name": "Dr. Foster",
+      "seniority": "Junior",
+      "day": 10,
+      "date": "2025-11-13",
+      "weekday": "Thursday",
+      "week": 2,
+      "is_weekend": false,
+      "shift_id": "Day",
+      "shift_name": "Daytime",
+      "start": "2025-11-13T08:30",
+      "end": "2025-11-13T16:00",
+      "hours": 7.5
+    },
+    {
+      "doctor_id": "D2",
+      "doctor_name": "Dr. Brown",
+      "seniority": "Senior",
+      "day": 10,
+      "date": "2025-11-13",
+      "weekday": "Thursday",
+      "week": 2,
+      "is_weekend": false,
+      "shift_id": "Evening",
+      "shift_name": "Evening",
+      "start": "2025-11-13T16:00",
+      "end": "2025-11-13T23:00",
+      "hours": 7.0
+    },
+    {
+      "doctor_id": "D5",
+      "doctor_name": "Dr. Evans",
+      "seniority": "Junior",
+      "day": 10,
+      "date": "2025-11-13",
+      "weekday": "Thursday",
+      "week": 2,
+      "is_weekend": false,
+      "shift_id": "Night",
+      "shift_name": "Night",
+      "start": "2025-11-13T23:00",
+      "end": "2025-11-14T08:30",
+      "hours": 9.5
+    },
+    {
+      "doctor_id": "D1",
+      "doctor_name": "Dr. Adams",
+      "seniority": "Senior",
+      "day": 11,
+      "date": "2025-11-14",
+      "weekday": "Friday",
+      "week": 2,
+      "is_weekend": false,
+      "shift_id": "Day",
+      "shift_name": "Daytime",
+      "start": "2025-11-14T08:30",
+      "end": "2025-11-14T16:00",
+      "hours": 7.5
+    },
+    {
+      "doctor_id": "D4",
+      "doctor_name": "Dr. Diaz",
+      "seniority": "Junior",
+      "day": 11,
+      "date": "2025-11-14",
+      "weekday": "Friday",
+      "week": 2,
+      "is_weekend": false,
+      "shift_id": "Evening",
+      "shift_name": "Evening",
+      "start": "2025-11-14T16:00",
+      "end": "2025-11-14T23:00",
+      "hours": 7.0
+    },
+    {
+      "doctor_id": "D5",
+      "doctor_name": "Dr. Evans",
+      "seniority": "Junior",
+      "day": 11,
+      "date": "2025-11-14",
+      "weekday": "Friday",
+      "week": 2,
+      "is_weekend": false,
+      "shift_id": "Night",
+      "shift_name": "Night",
+      "start": "2025-11-14T23:00",
+      "end": "2025-11-15T08:30",
+      "hours": 9.5
+    },
+    {
+      "doctor_id": "D3",
+      "doctor_name": "Dr. Carter",
+      "seniority": "Junior",
+      "day": 12,
+      "date": "2025-11-15",
+      "weekday": "Saturday",
+      "week": 2,
+      "is_weekend": true,
+      "shift_id": "Day",
+      "shift_name": "Daytime",
+      "start": "2025-11-15T08:30",
+      "end": "2025-11-15T16:00",
+      "hours": 7.5
+    },
+    {
+      "doctor_id": "D2",
+      "doctor_name": "Dr. Brown",
+      "seniority": "Senior",
+      "day": 12,
+      "date": "2025-11-15",
+      "weekday": "Saturday",
+      "week": 2,
+      "is_weekend": true,
+      "shift_id": "Evening",
+      "shift_name": "Evening",
+      "start": "2025-11-15T16:00",
+      "end": "2025-11-15T23:00",
+      "hours": 7.0
+    },
+    {
+      "doctor_id": "D4",
+      "doctor_name": "Dr. Diaz",
+      "seniority": "Junior",
+      "day": 12,
+      "date": "2025-11-15",
+      "weekday": "Saturday",
+      "week": 2,
+      "is_weekend": true,
+      "shift_id": "Night",
+      "shift_name": "Night",
+      "start": "2025-11-15T23:00",
+      "end": "2025-11-16T08:30",
+      "hours": 9.5
+    },
+    {
+      "doctor_id": "D2",
+      "doctor_name": "Dr. Brown",
+      "seniority": "Senior",
+      "day": 13,
+      "date": "2025-11-16",
+      "weekday": "Sunday",
+      "week": 2,
+      "is_weekend": true,
+      "shift_id": "Day",
+      "shift_name": "Daytime",
+      "start": "2025-11-16T08:30",
+      "end": "2025-11-16T16:00",
+      "hours": 7.5
+    },
+    {
+      "doctor_id": "D5",
+      "doctor_name": "Dr. Evans",
+      "seniority": "Junior",
+      "day": 13,
+      "date": "2025-11-16",
+      "weekday": "Sunday",
+      "week": 2,
+      "is_weekend": true,
+      "shift_id": "Evening",
+      "shift_name": "Evening",
+      "start": "2025-11-16T16:00",
+      "end": "2025-11-16T23:00",
+      "hours": 7.0
+    },
+    {
+      "doctor_id": "D3",
+      "doctor_name": "Dr. Carter",
+      "seniority": "Junior",
+      "day": 13,
+      "date": "2025-11-16",
+      "weekday": "Sunday",
+      "week": 2,
+      "is_weekend": true,
+      "shift_id": "Night",
+      "shift_name": "Night",
+      "start": "2025-11-16T23:00",
+      "end": "2025-11-17T08:30",
+      "hours": 9.5
+    }
+  ],
+  "validation": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "Assignment data",
+        "passed": true,
+        "violations": 0,
+        "details": []
+      },
+      {
+        "name": "Exact coverage",
+        "passed": true,
+        "violations": 0,
+        "details": []
+      },
+      {
+        "name": "Daily limit",
+        "passed": true,
+        "violations": 0,
+        "details": []
+      },
+      {
+        "name": "Capacity",
+        "passed": true,
+        "violations": 0,
+        "details": []
+      },
+      {
+        "name": "Unavailability",
+        "passed": true,
+        "violations": 0,
+        "details": []
+      },
+      {
+        "name": "Night eligibility",
+        "passed": true,
+        "violations": 0,
+        "details": []
+      },
+      {
+        "name": "No overlap",
+        "passed": true,
+        "violations": 0,
+        "details": []
+      }
+    ],
+    "total_violations": 0
+  }
+}
